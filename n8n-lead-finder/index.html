@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free n8n workflow: businesses with no website</title>
+<meta name="description" content="A free n8n workflow (9 nodes, no community nodes) that finds businesses with no website in Google Places and appends them to Sheets, deduplicating runs.">
+<meta name="theme-color" content="#0b0f14">
+<link rel="canonical" href="https://ellokillox.github.io/n8n-lead-finder/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>&#128269;</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free n8n workflow: businesses with no website">
+<meta property="og:description" content="A free n8n workflow (9 nodes, no community nodes) that finds businesses with no website in Google Places and appends them to Sheets, deduplicating runs.">
+<meta property="og:url" content="https://ellokillox.github.io/n8n-lead-finder/">
+<style>
+:root{--bg:#0b0f14;--fg:#e6edf3;--mut:#9db0c0;--acc:#4ade80;--line:#1f2a36;--card:#111821}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 64px}
+a{color:var(--acc)}
+h1{font-size:1.85rem;line-height:1.25;margin:.2em 0 .5em}
+h2{font-size:1.25rem;margin:2em 0 .6em}
+h3{font-size:1.05rem;margin:1.6em 0 .4em}
+p,li{color:#cfdae4}
+.lead{font-size:1.06rem;color:var(--mut)}
+code{background:#161f2b;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.9em;word-break:break-word}
+pre{background:#161f2b;border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-size:.86rem}
+pre code{border:0;background:none;padding:0}
+.card{display:block;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:18px 20px;margin:16px 0;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--acc)}
+.card h2{margin:.1em 0 .3em;font-size:1.15rem;color:var(--fg)}
+.card p{margin:.3em 0;color:var(--mut);font-size:.95rem}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600}
+.note{border-left:3px solid var(--acc);background:#0f1a14;padding:10px 14px;border-radius:0 8px 8px 0;margin:18px 0}
+.note p{margin:.25em 0}
+footer{margin-top:48px;border-top:1px solid var(--line);padding-top:16px;color:var(--mut);font-size:.9rem}
+nav a{margin-right:14px;font-size:.92rem}
+.tag{display:inline-block;font-size:.75rem;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a href="/">Home</a><a href="/n8n-lead-finder/">n8n workflow</a><a href="/mcp-local-leads/">MCP server</a><a href="https://b2b.medicpc51.cl/">The full kit &rarr;</a></nav>
+
+<h1>Find local businesses without a website in any city</h1>
+<p class="lead">A free n8n workflow. Set a niche and a city, run it, and the businesses that have a Maps
+listing but <strong>no website</strong> end up in a Google Sheet — one row each, no repeats from earlier runs.</p>
+
+<h2>What it does</h2>
+<ol>
+  <li><strong>Set niche, city and sheet name.</strong> Four values in one node: search text, city, region code and worksheet name.</li>
+  <li><strong>Search businesses in Google Maps.</strong> <code>POST places:searchText</code> on Places API (New) with a narrow field mask (13 fields), page size 20, up to 3 pages per run.</li>
+  <li><strong>Flatten.</strong> One row per business, with the phone, the address and a clean city column.</li>
+  <li><strong>Deduplicate across runs.</strong> Removes businesses already saved in earlier executions (history 5000).</li>
+  <li><strong>Keep only the ones with no website.</strong> A single filter on <code>websiteUri</code>.</li>
+  <li><strong>Append to Google Sheets.</strong> 14 columns; the discarded branch ends in a NoOp so the run stays readable.</li>
+</ol>
+
+<h3>The 9 nodes</h3>
+<ul>
+      <li><code>Run every day at 08:00</code></li>
+      <li><code>Run manually (test with this one)</code></li>
+      <li><code>Set niche, city and sheet name</code></li>
+      <li><code>Search businesses in Google Maps</code></li>
+      <li><code>Flatten results into one row per business</code></li>
+      <li><code>Skip businesses already saved in earlier runs</code></li>
+      <li><code>Keep only businesses with no website</code></li>
+      <li><code>Append rows to Google Sheets</code></li>
+      <li><code>Discarded: this business already has a website</code></li>
+</ul>
+
+<h2>Measured, not claimed</h2>
+<p>Run against n8n <strong>3.0.0</strong> in a clean container, with a recorded mock of the Places
+endpoint (11 businesses across 3 pages):</p>
+<table>
+  <tr><th>Check</th><th>Result</th></tr>
+  <tr><td>Import into a clean instance</td><td><strong>15/15 nodes</strong></td></tr>
+  <tr><td>Rows written on the first run</td><td><strong>7</strong> of 11 — exactly the ones without a website</td></tr>
+  <tr><td>Columns in the output</td><td><strong>14</strong></td></tr>
+  <tr><td>Second run</td><td><strong>0 rows</strong> (the deduplication works)</td></tr>
+  <tr><td>City column</td><td><code>Santiago</code>, not the country</td></tr>
+  <tr><td>Assertions in the test script</td><td><strong>13</strong>, all passing</td></tr>
+</table>
+<div class="note">
+<p><strong>The honest limit:</strong> the test uses a recorded mock of the Places response, so it proves the
+<em>logic</em> (pagination, flattening, deduplication, filter, columns) — not what Google will answer for your
+city. For that you need your own key and your own first run, which costs a few cents.</p>
+</div>
+
+<h2>Install</h2>
+<ol>
+  <li>Create a <strong>Google Places API (New)</strong> key with billing enabled in Google Cloud Console and enable <em>Places API (New)</em>.</li>
+  <li>In n8n: <em>Import from file</em> &rarr; the JSON below.</li>
+  <li>Create an <strong>HTTP Header Auth</strong> credential with header <code>X-Goog-Api-Key</code> and your key as the value, and select it in the <em>Search businesses in Google Maps</em> node.</li>
+  <li>Connect your Google Sheets account in <em>Append rows to Google Sheets</em> and pick the spreadsheet.</li>
+  <li>Open <strong>1. EDIT HERE</strong> and set niche, city, region and sheet name. Run the manual trigger first; the daily trigger stays off until you are happy with the list.</li>
+</ol>
+
+<h2>Download</h2>
+<p><a href="/n8n-lead-finder/Find-local-businesses-without-a-website-in-any-city.json"><strong>Find-local-businesses-without-a-website-in-any-city.json</strong></a>
+· 16,708 bytes · sha256 <code>3ef75603f350a9ee…</code> · MIT</p>
+<p>The same file lives in the repository: <a href="https://github.com/ellokillox/n8n-find-local-businesses-without-website">github.com/ellokillox/n8n-find-local-businesses-without-website</a>.</p>
+
+<div class="note">
+<p><strong>Next step after the list:</strong> scoring who is worth the first message, the prompt that writes the
+pitch, the templates and the cost ceiling live in the <a href="https://b2b.medicpc51.cl/plantilla-n8n/">paid kit</a>.
+This workflow is the first step of it, free.</p>
+</div>
+<footer>
+<p>Places API prices are Google's and change: check their pricing page before a big run.</p>
+<p>Built by <a href="https://github.com/ellokillox">ellokillox</a> · MedicPC ·
+<a href="https://b2b.medicpc51.cl/">B2B Revenue Autopilot Kit</a> · the tools on this site are MIT licensed and free.</p>
+</footer>
+</div>
+</body>
+</html>
