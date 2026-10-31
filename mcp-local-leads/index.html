@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mcp-local-leads: find businesses with no website</title>
+<meta name="description" content="Free MCP server: find businesses with no website in any city from your AI chat, and export them to CSV. One file, zero dependencies, Python 3.9+.">
+<meta name="theme-color" content="#0b0f14">
+<link rel="canonical" href="https://ellokillox.github.io/mcp-local-leads/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>&#128269;</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="mcp-local-leads: find businesses with no website">
+<meta property="og:description" content="Free MCP server: find businesses with no website in any city from your AI chat, and export them to CSV. One file, zero dependencies, Python 3.9+.">
+<meta property="og:url" content="https://ellokillox.github.io/mcp-local-leads/">
+<style>
+:root{--bg:#0b0f14;--fg:#e6edf3;--mut:#9db0c0;--acc:#4ade80;--line:#1f2a36;--card:#111821}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 64px}
+a{color:var(--acc)}
+h1{font-size:1.85rem;line-height:1.25;margin:.2em 0 .5em}
+h2{font-size:1.25rem;margin:2em 0 .6em}
+h3{font-size:1.05rem;margin:1.6em 0 .4em}
+p,li{color:#cfdae4}
+.lead{font-size:1.06rem;color:var(--mut)}
+code{background:#161f2b;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.9em;word-break:break-word}
+pre{background:#161f2b;border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-size:.86rem}
+pre code{border:0;background:none;padding:0}
+.card{display:block;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:18px 20px;margin:16px 0;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--acc)}
+.card h2{margin:.1em 0 .3em;font-size:1.15rem;color:var(--fg)}
+.card p{margin:.3em 0;color:var(--mut);font-size:.95rem}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600}
+.note{border-left:3px solid var(--acc);background:#0f1a14;padding:10px 14px;border-radius:0 8px 8px 0;margin:18px 0}
+.note p{margin:.25em 0}
+footer{margin-top:48px;border-top:1px solid var(--line);padding-top:16px;color:var(--mut);font-size:.9rem}
+nav a{margin-right:14px;font-size:.92rem}
+.tag{display:inline-block;font-size:.75rem;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a href="/">Home</a><a href="/n8n-lead-finder/">n8n workflow</a><a href="/mcp-local-leads/">MCP server</a><a href="https://b2b.medicpc51.cl/">The full kit &rarr;</a></nav>
+
+<h1>mcp-local-leads — ask your AI chat for the list</h1>
+<p class="lead">An MCP (Model Context Protocol) server with two tools. You ask in plain language; the server
+queries Google Places API (New), paginates, deduplicates by <code>placeId</code> and returns only the businesses
+whose <code>websiteUri</code> is empty.</p>
+
+<pre><code>“Find dental clinics without a website in Temuco, Chile and save them to a CSV.”</code></pre>
+
+<h2>Two tools</h2>
+<table>
+  <tr><th>Tool</th><th>What it does</th></tr>
+  <tr><td><code>find_businesses_without_website</code></td><td>city (required), niche, country, limit 1–60, page size 1–20, up to 3 pages, language. Returns name, address, phone, rating, Maps link.</td></tr>
+  <tr><td><code>export_leads_csv</code></td><td>Writes the same rows to a CSV file with a UTF-8 BOM so Excel opens the accents correctly.</td></tr>
+</table>
+
+<h2>Why this one</h2>
+<ul>
+  <li><strong>One file, zero dependencies.</strong> Standard library only, Python 3.9+ (CI runs 3.9, 3.12 and 3.13). No <code>pip install</code>, no Node, no build step.</li>
+  <li><strong>Narrow field mask</strong> — Places bills per field, so asking for less costs less.</li>
+  <li><strong>No scraping.</strong> It reads what the official API already returns.</li>
+  <li><strong>Tested as a protocol, not just as Python:</strong> a stdio test suite, the official <code>mcp</code> SDK as client, and a Docker test that starts the container and speaks JSON-RPC to it.</li>
+</ul>
+
+<h2>Install (Claude Desktop)</h2>
+<pre><code>{
+  "mcpServers": {
+    "local-leads": {
+      "command": "python3",
+      "args": ["/ABSOLUTE/PATH/TO/server.py"],
+      "env": { "GOOGLE_PLACES_API_KEY": "YOUR_KEY_HERE" }
+    }
+  }
+}</code></pre>
+<p>Save <code>server.py</code> anywhere, get a <strong>Google Places API (New)</strong> key with billing enabled,
+paste the block in your client config and restart. For Claude Code or any stdio client:
+<code>GOOGLE_PLACES_API_KEY=your_key python3 server.py</code>.</p>
+
+<h3>Docker</h3>
+<pre><code>docker build -t mcp-local-leads .
+docker run -i --rm -e GOOGLE_PLACES_API_KEY=your_key mcp-local-leads</code></pre>
+<p><code>-i</code> keeps stdin open and there is <strong>no</strong> <code>-t</code>: an MCP stdio server speaks
+one JSON line per message and a pseudo-TTY would corrupt it.</p>
+
+<div class="note">
+<p><strong>Without a key</strong> the tool returns an error naming <code>GOOGLE_PLACES_API_KEY</code> instead of
+crashing — that case is one of the tests, because it is the first state a new user hits.</p>
+</div>
+
+<p>Source, tests and CI: <a href="https://github.com/ellokillox/mcp-local-leads">github.com/ellokillox/mcp-local-leads</a> (MIT).</p>
+
+<div class="note">
+<p><strong>The server that does the pipeline</strong> — scoring, enrichment, CRM sync — ships with the
+<a href="https://b2b.medicpc51.cl/">B2B Revenue Autopilot Kit</a>. This one only finds; that one decides who is worth writing to.</p>
+</div>
+<footer>
+<p>Places API usage is billed to your own Google account. This project stores nothing.</p>
+<p>Built by <a href="https://github.com/ellokillox">ellokillox</a> · MedicPC ·
+<a href="https://b2b.medicpc51.cl/">B2B Revenue Autopilot Kit</a> · the tools on this site are MIT licensed and free.</p>
+</footer>
+</div>
+</body>
+</html>
