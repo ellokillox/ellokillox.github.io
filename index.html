@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free tools to find local businesses without a website</title>
+<meta name="description" content="Two free MIT tools — an n8n workflow and an MCP server — that list local businesses with no website in Google Maps. Stock n8n nodes, zero dependencies, tested.">
+<meta name="theme-color" content="#0b0f14">
+<link rel="canonical" href="https://ellokillox.github.io/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>&#128269;</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free tools to find local businesses without a website">
+<meta property="og:description" content="Two free MIT tools — an n8n workflow and an MCP server — that list local businesses with no website in Google Maps. Stock n8n nodes, zero dependencies, tested.">
+<meta property="og:url" content="https://ellokillox.github.io/">
+<style>
+:root{--bg:#0b0f14;--fg:#e6edf3;--mut:#9db0c0;--acc:#4ade80;--line:#1f2a36;--card:#111821}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px 64px}
+a{color:var(--acc)}
+h1{font-size:1.85rem;line-height:1.25;margin:.2em 0 .5em}
+h2{font-size:1.25rem;margin:2em 0 .6em}
+h3{font-size:1.05rem;margin:1.6em 0 .4em}
+p,li{color:#cfdae4}
+.lead{font-size:1.06rem;color:var(--mut)}
+code{background:#161f2b;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.9em;word-break:break-word}
+pre{background:#161f2b;border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-size:.86rem}
+pre code{border:0;background:none;padding:0}
+.card{display:block;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:18px 20px;margin:16px 0;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--acc)}
+.card h2{margin:.1em 0 .3em;font-size:1.15rem;color:var(--fg)}
+.card p{margin:.3em 0;color:var(--mut);font-size:.95rem}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600}
+.note{border-left:3px solid var(--acc);background:#0f1a14;padding:10px 14px;border-radius:0 8px 8px 0;margin:18px 0}
+.note p{margin:.25em 0}
+footer{margin-top:48px;border-top:1px solid var(--line);padding-top:16px;color:var(--mut);font-size:.9rem}
+nav a{margin-right:14px;font-size:.92rem}
+.tag{display:inline-block;font-size:.75rem;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><a href="/">Home</a><a href="/n8n-lead-finder/">n8n workflow</a><a href="/mcp-local-leads/">MCP server</a><a href="https://b2b.medicpc51.cl/">The full kit &rarr;</a></nav>
+
+<h1>Free tools to find local businesses without a website</h1>
+<p class="lead">Every small business that appears on Google Maps <strong>without a website</strong> is a
+prospect: if you sell websites, SEO, ads or automation, that is the list you want. These two tools build it
+from the official Places API — no scraping, no data broker, no subscription.</p>
+
+<a class="card" href="/n8n-lead-finder/">
+  <span class="tag">n8n</span><span class="tag">Google Sheets</span>
+  <h2>Find local businesses without a website in any city — n8n workflow</h2>
+  <p>Runs on a schedule, reads up to 3 pages of 20 results per run, drops what
+  earlier runs already saved and appends <strong>only</strong> the businesses with no website to Google Sheets.
+  9 nodes, all of them shipped with n8n.</p>
+  <p><strong>Download the JSON &rarr;</strong></p>
+</a>
+
+<a class="card" href="/mcp-local-leads/">
+  <span class="tag">MCP</span><span class="tag">Python 3.9+</span>
+  <h2>mcp-local-leads — ask your AI chat for the list</h2>
+  <p>An MCP server with two tools. You type <em>“find dental clinics without a website in Temuco, Chile”</em>
+  in Claude Desktop, Claude Code or Cursor and the server does the query, the pagination and the filtering.
+  One file, zero dependencies, no <code>pip install</code>.</p>
+  <p><strong>Install in one config block &rarr;</strong></p>
+</a>
+
+<h2>What these tools are not</h2>
+<p>You bring your own <strong>Google Places API (New)</strong> key with billing enabled, so Google bills
+<em>your</em> account (the first requests each month are free; a run of 3 pages is a few
+cents). Nothing here resells or caches Google data, and no personal data is collected: only what the Places
+API returns for a business.</p>
+
+<div class="note">
+<p><strong>What is not free.</strong> These two tools stop where the selling starts: they find businesses with
+no website, but they do not score them, write the pitch, or keep the pipeline. That is the
+<a href="https://b2b.medicpc51.cl/">B2B Revenue Autopilot Kit</a>: a scoring rubric, the prompts, first-contact templates in
+English and Spanish, an API cost guide, a pipeline/CRM server and a commercial licence.</p>
+</div>
+
+<h2>Why we publish them</h2>
+<p>Because the hard part of prospecting is not the idea, it is the plumbing that works twice in a row: the
+field mask that does not overbill, the pagination cap, the deduplication between runs, the export that opens
+in Excel. We publish that part free — including the exact test output — so you can check it before you trust
+it.</p>
+<footer>
+<p>Test results are printed in each page: what was measured, in which n8n version, and what was not.</p>
+<p>Built by <a href="https://github.com/ellokillox">ellokillox</a> · MedicPC ·
+<a href="https://b2b.medicpc51.cl/">B2B Revenue Autopilot Kit</a> · the tools on this site are MIT licensed and free.</p>
+</footer>
+</div>
+</body>
+</html>
