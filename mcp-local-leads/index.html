@@ -81,6 +81,11 @@ paste the block in your client config and restart. For Claude Code or any stdio 
 <code>GOOGLE_PLACES_API_KEY=your_key python3 server.py</code>.</p>
 
 <h3>Docker</h3>
+<p>The image is already published (official MCP Registry:
+<code>io.github.ellokillox/mcp-local-leads</code> · GHCR, <code>amd64</code> and <code>arm64</code>):</p>
+<pre><code>docker run -i --rm -e GOOGLE_PLACES_API_KEY=your_key \
+  ghcr.io/ellokillox/mcp-local-leads:1.0.0</code></pre>
+<p>Or build it yourself, it is the same file:</p>
 <pre><code>docker build -t mcp-local-leads .
 docker run -i --rm -e GOOGLE_PLACES_API_KEY=your_key mcp-local-leads</code></pre>
 <p><code>-i</code> keeps stdin open and there is <strong>no</strong> <code>-t</code>: an MCP stdio server speaks
